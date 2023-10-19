@@ -2,26 +2,28 @@ package com.mavs.demopark.web.controller;
 
 import com.mavs.demopark.entity.Usuario;
 import com.mavs.demopark.service.UsuarioService;
+import com.mavs.demopark.web.controller.dto.UsuarioCreateDto;
+import com.mavs.demopark.web.controller.dto.UsuarioResponseDto;
+import com.mavs.demopark.web.controller.dto.mapper.UsuarioMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/usuarios")
-public class UsarioController {
+public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
 
     @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario){
-        Usuario user = usuarioService.salvar(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    public ResponseEntity<UsuarioResponseDto> create(@RequestBody UsuarioCreateDto createDto){
+        Usuario user = usuarioService.salvar(UsuarioMapper.toUsuario(createDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toDto(user));
     }
 
     @GetMapping("/{id}")
