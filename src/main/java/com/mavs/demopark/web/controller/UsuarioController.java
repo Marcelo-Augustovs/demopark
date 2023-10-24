@@ -34,9 +34,9 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAllUsers(){
+    public ResponseEntity<List<UsuarioResponseDto>> getAllUsers(){
         List<Usuario> users = usuarioService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(UsuarioMapper.toListDto(users));
     }
 
     @PatchMapping("/{id}")
