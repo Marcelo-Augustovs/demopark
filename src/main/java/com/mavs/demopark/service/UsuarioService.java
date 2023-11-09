@@ -1,8 +1,10 @@
 package com.mavs.demopark.service;
 
 import com.mavs.demopark.entity.Usuario;
+import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import com.mavs.demopark.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +20,11 @@ public class UsuarioService {
 
     @Transactional
     public Usuario salvar(Usuario usuario) {
-        return repository.save(usuario);
+       try {
+           return repository.save(usuario);
+       }catch (DataIntegrityViolationException ex){
+           throw new UsernameUniqueViolationException(String.format("Username %s já foi cadastrado",usuario.getUsername()));
+       }
     }
 
     @Transactional(readOnly = true)

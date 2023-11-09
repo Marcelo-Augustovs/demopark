@@ -1,5 +1,6 @@
 package com.mavs.demopark.web.controller.exception;
 
+import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,5 +24,15 @@ public class ApiExceptionHandler {
               .status(HttpStatus.UNPROCESSABLE_ENTITY)
               .contentType(MediaType.APPLICATION_JSON)
               .body(new ErroMessage(request ,HttpStatus.UNPROCESSABLE_ENTITY,"campo(s) invalido(s)",result ));
+    }
+
+    @ExceptionHandler(UsernameUniqueViolationException.class)
+    public ResponseEntity<ErroMessage> UsernameUniqueViolationException(RuntimeException ex,HttpServletRequest request){
+
+        log.error("Api Error - ",ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErroMessage(request ,HttpStatus.CONFLICT, ex.getMessage()));
     }
 }
