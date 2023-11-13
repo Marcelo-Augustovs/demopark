@@ -1,5 +1,7 @@
 package com.mavs.demopark.web.controller.exception;
 
+import com.mavs.demopark.exception.EntityNotFoundException;
+import com.mavs.demopark.exception.PasswordInvalidException;
 import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -34,5 +36,23 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErroMessage(request ,HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErroMessage> EntityNotFoundException(RuntimeException ex,HttpServletRequest request){
+        log.error("Api Error - ",ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErroMessage(request ,HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordInvalidException.class)
+    public ResponseEntity<ErroMessage> PasswordInvalidException(RuntimeException ex,HttpServletRequest request){
+        log.error("Api Error - ",ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErroMessage(request ,HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 }

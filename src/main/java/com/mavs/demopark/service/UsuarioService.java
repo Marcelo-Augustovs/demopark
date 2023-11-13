@@ -1,6 +1,8 @@
 package com.mavs.demopark.service;
 
 import com.mavs.demopark.entity.Usuario;
+import com.mavs.demopark.exception.EntityNotFoundException;
+import com.mavs.demopark.exception.PasswordInvalidException;
 import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import com.mavs.demopark.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,17 +32,17 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Usuario buscarPorId(Long id) {
         return repository.findById(id).orElseThrow(
-                () -> new RuntimeException("Usuario não encontrado"));
+                () -> new EntityNotFoundException(String.format( "Usuario id=%s não encontrado",id)) );
     }
 
     @Transactional
     public Usuario editarSenha(Long id, String senhaAtual, String novaSenha, String confirmarSenha) {
         Usuario user = buscarPorId(id);
         if(!user.getPassword().equals(senhaAtual)){
-            throw new RuntimeException("Sua Senha não confere.");
+            throw new PasswordInvalidException("Sua Senha não confere.");
         }
         if(!novaSenha.equals(confirmarSenha)){
-            throw new RuntimeException("Nova Senha não confere com confirmação de senha");
+            throw new PasswordInvalidException("Nova Senha não confere com confirmação de senha");
         }
         user.setPassword(novaSenha);
         return user;
