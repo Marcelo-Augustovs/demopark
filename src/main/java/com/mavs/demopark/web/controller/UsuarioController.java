@@ -72,10 +72,12 @@ public class UsuarioController {
     @Operation(summary = "Atualizar senha",description = "Atualizar senha",
             responses = {
                     @ApiResponse(responseCode = "204",description = "senha atualizada com sucesso",
-                            content = @Content(mediaType = "application/json",schema = @Schema(implementation = UsuarioResponseDto.class))),
+                            content = @Content(mediaType = "application/json",schema = @Schema(implementation = void.class))),
                     @ApiResponse(responseCode = "400", description = "senha não confere",
                             content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class))),
                     @ApiResponse(responseCode = "404", description = "Recurso não encontrado",
+                            content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos Invalidos ou mal formatados",
                             content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class)))
             })
     @PatchMapping("/{id}")
