@@ -2,6 +2,7 @@ package com.mavs.demopark.web.controller.exception;
 
 import com.mavs.demopark.exception.EntityNotFoundException;
 import com.mavs.demopark.exception.PasswordInvalidException;
+import com.mavs.demopark.exception.PasswordInvalidException2;
 import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -54,5 +55,14 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErroMessage(request ,HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordInvalidException2.class)
+    public ResponseEntity<ErroMessage> PasswordInvalidException2(RuntimeException ex,HttpServletRequest request){
+        log.error("Api Error - ",ex);
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErroMessage(request ,HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage()));
     }
 }
