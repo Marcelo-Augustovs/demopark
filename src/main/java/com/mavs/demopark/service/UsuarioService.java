@@ -3,6 +3,7 @@ package com.mavs.demopark.service;
 import com.mavs.demopark.entity.Usuario;
 import com.mavs.demopark.exception.EntityNotFoundException;
 import com.mavs.demopark.exception.PasswordInvalidException;
+import com.mavs.demopark.exception.PasswordInvalidException2;
 import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import com.mavs.demopark.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,9 @@ public class UsuarioService {
     @Transactional
     public Usuario editarSenha(Long id, String senhaAtual, String novaSenha, String confirmarSenha) {
         Usuario user = buscarPorId(id);
+        if(novaSenha.length() > 6 || novaSenha.length() < 6){
+            throw new PasswordInvalidException2("A senha tem que possuir 6 digitos e não pode ser nula.");
+        }
         if(!user.getPassword().equals(senhaAtual)){
             throw new PasswordInvalidException("Sua Senha não confere.");
         }
