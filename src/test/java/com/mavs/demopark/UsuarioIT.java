@@ -1,15 +1,16 @@
 package com.mavs.demopark;
 
-import com.mavs.demopark.web.controller.dto.UsuarioCreateDto;
-import com.mavs.demopark.web.controller.dto.UsuarioResponseDto;
-import com.mavs.demopark.web.controller.dto.UsuarioSenhaDto;
-import com.mavs.demopark.web.controller.exception.ErroMessage;
+import com.mavs.demopark.web.dto.UsuarioCreateDto;
+import com.mavs.demopark.web.dto.UsuarioResponseDto;
+import com.mavs.demopark.web.dto.UsuarioSenhaDto;
+import com.mavs.demopark.web.exception.ErroMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/usuarios/usuarios-insert.sql",executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -240,5 +241,18 @@ public class UsuarioIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+    }
+
+    @Test
+    public void buscarTodosUsuarios_ComIdExistente_RetornarListadeUsuariosComStatus200(){
+        List<UsuarioResponseDto> responseBody = testClient
+                .get()
+                .uri("/api/v1/usuarios")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(UsuarioResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
     }
 }
