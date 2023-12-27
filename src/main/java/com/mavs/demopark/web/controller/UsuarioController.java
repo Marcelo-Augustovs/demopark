@@ -1,12 +1,12 @@
-package com.mavs.demopark.web.controller;
+package com.mavs.demopark.web;
 
 import com.mavs.demopark.entity.Usuario;
 import com.mavs.demopark.service.UsuarioService;
-import com.mavs.demopark.web.controller.dto.UsuarioCreateDto;
-import com.mavs.demopark.web.controller.dto.UsuarioResponseDto;
-import com.mavs.demopark.web.controller.dto.UsuarioSenhaDto;
-import com.mavs.demopark.web.controller.dto.mapper.UsuarioMapper;
-import com.mavs.demopark.web.controller.exception.ErroMessage;
+import com.mavs.demopark.web.dto.UsuarioCreateDto;
+import com.mavs.demopark.web.dto.UsuarioResponseDto;
+import com.mavs.demopark.web.dto.UsuarioSenhaDto;
+import com.mavs.demopark.web.dto.mapper.UsuarioMapper;
+import com.mavs.demopark.web.exception.ErroMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
