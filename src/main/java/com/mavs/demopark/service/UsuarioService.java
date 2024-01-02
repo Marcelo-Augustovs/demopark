@@ -8,6 +8,7 @@ import com.mavs.demopark.exception.UsernameUniqueViolationException;
 import com.mavs.demopark.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,13 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder ;
 
 
     @Transactional
     public Usuario salvar(Usuario usuario) {
        try {
+           usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
            return repository.save(usuario);
        }catch (DataIntegrityViolationException ex){
            throw new UsernameUniqueViolationException(String.format("Username %s já foi cadastrado",usuario.getUsername()));
@@ -42,13 +45,13 @@ public class UsuarioService {
         if(novaSenha.length() > 6 || novaSenha.length() < 6){
             throw new PasswordInvalidException2("A senha tem que possuir 6 digitos e não pode ser nula.");
         }
-        if(!user.getPassword().equals(senhaAtual)){
+        if(!passwordEncoder.matches(senhaAtual, user.getPassword())){
             throw new PasswordInvalidException("Sua Senha não confere.");
         }
         if(!novaSenha.equals(confirmarSenha)){
             throw new PasswordInvalidException("Nova Senha não confere com confirmação de senha");
         }
-        user.setPassword(novaSenha);
+        user.setPassword(passwordEncoder.encode(novaSenha));
         return user;
     }
 
