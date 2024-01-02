@@ -1,8 +1,8 @@
-package com.mavs.demopark.web.controller.dto.mapper;
+package com.mavs.demopark.web.dto.mapper;
 
 import com.mavs.demopark.entity.Usuario;
-import com.mavs.demopark.web.controller.dto.UsuarioCreateDto;
-import com.mavs.demopark.web.controller.dto.UsuarioResponseDto;
+import com.mavs.demopark.web.dto.UsuarioCreateDto;
+import com.mavs.demopark.web.dto.UsuarioResponseDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 

@@ -1,4 +1,4 @@
-package com.mavs.demopark.web.controller.dto;
+package com.mavs.demopark.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

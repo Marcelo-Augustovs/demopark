@@ -1,4 +1,4 @@
-package com.mavs.demopark.web;
+package com.mavs.demopark.web.controller;
 
 import com.mavs.demopark.entity.Usuario;
 import com.mavs.demopark.service.UsuarioService;

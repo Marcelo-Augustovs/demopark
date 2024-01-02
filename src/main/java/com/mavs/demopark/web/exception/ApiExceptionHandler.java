@@ -1,4 +1,4 @@
-package com.mavs.demopark.web.controller.exception;
+package com.mavs.demopark.web.exception;
 
 import com.mavs.demopark.exception.EntityNotFoundException;
 import com.mavs.demopark.exception.PasswordInvalidException;
