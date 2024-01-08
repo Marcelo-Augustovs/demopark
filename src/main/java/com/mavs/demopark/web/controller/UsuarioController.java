@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,6 +54,7 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class)))
             })
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENT') AND #id == authentication.principal.id")
     public ResponseEntity<UsuarioResponseDto> getById(@PathVariable Long id){
         UsuarioResponseDto userDto = UsuarioMapper.toDto(usuarioService.buscarPorId(id));
         return ResponseEntity.ok(userDto);
@@ -64,6 +66,7 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDto.class))))
             })
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponseDto>> getAllUsers(){
         List<Usuario> users = usuarioService.getAllUsers();
         return ResponseEntity.ok(UsuarioMapper.toListDto(users));
@@ -81,6 +84,7 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class)))
             })
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENT') AND #id == authentication.principal.id")
     public ResponseEntity<Void> updatePassword(@PathVariable Long id , @RequestBody UsuarioSenhaDto dto){
         Usuario user = usuarioService.editarSenha(id,dto.getSenhaAtual(),dto.getNovaSenha(),dto.getConfirmarSenha());
         return ResponseEntity.noContent().build();
