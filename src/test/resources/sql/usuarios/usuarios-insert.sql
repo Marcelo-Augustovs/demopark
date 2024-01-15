@@ -1,3 +1,3 @@
-insert into usuarios (id, username , password ,role) values (100, 'ana@email.com','123456', 'ROLE_ADMIN');
-insert into usuarios (id, username , password ,role) values (101, 'bia@email.com','123456', 'ROLE_CLIENT');
-insert into usuarios (id, username , password ,role) values (102, 'bob@email.com','123456', 'ROLE_CLIENT');
+insert into usuarios (id, username , password ,role) values (100, 'ana@email.com','$2a$12$plQrc7DiZCHWgI5G3rXchuKAxC9QG/w1PjJFFjKWXT.Zi1K9prKda', 'ROLE_ADMIN');
+insert into usuarios (id, username , password ,role) values (101, 'bia@email.com','$2a$12$plQrc7DiZCHWgI5G3rXchuKAxC9QG/w1PjJFFjKWXT.Zi1K9prKda', 'ROLE_CLIENT');
+insert into usuarios (id, username , password ,role) values (102, 'bob@email.com','$2a$12$plQrc7DiZCHWgI5G3rXchuKAxC9QG/w1PjJFFjKWXT.Zi1K9prKda', 'ROLE_CLIENT');
