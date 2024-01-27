@@ -1,9 +1,6 @@
 package com.mavs.demopark.web.exception;
 
-import com.mavs.demopark.exception.EntityNotFoundException;
-import com.mavs.demopark.exception.PasswordInvalidException;
-import com.mavs.demopark.exception.PasswordInvalidException2;
-import com.mavs.demopark.exception.UsernameUniqueViolationException;
+import com.mavs.demopark.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,8 +36,8 @@ public class ApiExceptionHandler {
               .body(new ErroMessage(request ,HttpStatus.UNPROCESSABLE_ENTITY,"campo(s) invalido(s)",result ));
     }
 
-    @ExceptionHandler(UsernameUniqueViolationException.class)
-    public ResponseEntity<ErroMessage> usernameUniqueViolationException(RuntimeException ex,HttpServletRequest request){
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
+    public ResponseEntity<ErroMessage> uniqueViolationException(RuntimeException ex,HttpServletRequest request){
 
         log.error("Api Error - ",ex);
         return ResponseEntity
