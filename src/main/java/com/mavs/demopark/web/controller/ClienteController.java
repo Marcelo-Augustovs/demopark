@@ -20,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Clientes",description = "Contém todas as operações relativas ao recurso de um cliente")
 @RequiredArgsConstructor
 @RestController
@@ -53,10 +55,29 @@ public class ClienteController {
         return ResponseEntity.status(201).body(ClienteMapper.toDto(cliente));
     }
 
+    @Operation(summary = "Localizar um cliente",
+            description = "Recurso para localizar um cliente por ID. "
+                    + "Requisição exige uso de bearer token. Acesso restrito a Role'CLIENT'",
+            responses = {
+                    @ApiResponse(responseCode = "200",description = "Recurso localizado com sucesso",
+                            content = @Content(mediaType = "application/json",schema = @Schema(implementation = ClienteResponseDto.class))),
+                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
+                            content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "Cliente não encontrado",
+                            content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErroMessage.class)))
+            })
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClienteResponseDto> findById(@PathVariable Long id){
         Cliente cliente = clienteService.buscarPorId(id);
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ClienteResponseDto>> getAllCliente(){
+        List<Cliente> clientes = clienteService.getAllClientes();
+        return ResponseEntity.ok(ClienteMapper.toListDto(clientes));
     }
 
 }
