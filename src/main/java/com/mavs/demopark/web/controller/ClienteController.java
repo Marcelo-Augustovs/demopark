@@ -2,25 +2,35 @@ package com.mavs.demopark.web.controller;
 
 import com.mavs.demopark.entity.Cliente;
 import com.mavs.demopark.jwt.JwtUserDetails;
+import com.mavs.demopark.repository.projection.ClienteProjection;
 import com.mavs.demopark.service.ClienteService;
 import com.mavs.demopark.service.UsuarioService;
 import com.mavs.demopark.web.dto.ClienteCreateDto;
 import com.mavs.demopark.web.dto.ClienteResponseDto;
+import com.mavs.demopark.web.dto.PageableDto;
 import com.mavs.demopark.web.dto.mapper.ClienteMapper;
+import com.mavs.demopark.web.dto.mapper.PageableMapper;
 import com.mavs.demopark.web.exception.ErroMessage;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
 @Tag(name = "Clientes",description = "Contém todas as operações relativas ao recurso de um cliente")
 @RequiredArgsConstructor
@@ -34,6 +44,7 @@ public class ClienteController {
     @Operation(summary = "Criar um novo cliente",
             description = "Recurso para criar um novo cliente vinculado a um usuario cadastrado. "
              + "Requisição exige uso de bearer token. Acesso restrito a Role'CLIENT'",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                 @ApiResponse(responseCode = "201",description = "Recurso criado com sucesso",
                         content = @Content(mediaType = "application/json",schema = @Schema(implementation = ClienteResponseDto.class))),
@@ -58,6 +69,7 @@ public class ClienteController {
     @Operation(summary = "Localizar um cliente",
             description = "Recurso para localizar um cliente por ID. "
                     + "Requisição exige uso de bearer token. Acesso restrito a Role'CLIENT'",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200",description = "Recurso localizado com sucesso",
                             content = @Content(mediaType = "application/json",schema = @Schema(implementation = ClienteResponseDto.class))),
@@ -73,11 +85,43 @@ public class ClienteController {
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
     }
 
+    @Operation(summary = "Recuperar lista de clientes",
+        description = "Requisição exige uso de bearer token. Acesso restrito a Role='ADMIN' ",
+        security = @SecurityRequirement(name = "security"),
+        parameters = {
+                @Parameter(in = QUERY, name = "page",
+                        content = @Content(schema = @Schema(type = "integer",defaultValue = "0")),
+                        description = "Representa a página retornada"
+                ),
+                @Parameter(in = QUERY, name = "size",
+                        content = @Content(schema = @Schema(type = "integer",defaultValue = "20")),
+                        description = "Representa o total de elementos da página"
+                ),
+                @Parameter(in = QUERY, name = "sort", hidden = true,
+                        content = @Content(schema = @Schema(type = "string",defaultValue = "id,asc")),
+                        description = "Representa a ordenação dos resultados. Aceita multiplos critérios de ordenação são suportados.")
+        },
+        responses = {
+                @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
+                            schema = @Schema(implementation = ClienteResponseDto.class))
+                ),
+                @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil de CLIENTE",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
+                            schema = @Schema(implementation = ErroMessage.class)))
+        })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ClienteResponseDto>> getAllCliente(){
-        List<Cliente> clientes = clienteService.getAllClientes();
-        return ResponseEntity.ok(ClienteMapper.toListDto(clientes));
+    public ResponseEntity<PageableDto> getAllCliente(@Parameter(hidden = true) @PageableDefault(size = 5,sort = {"nome"}) Pageable pageable){
+        Page<ClienteProjection> clientes = clienteService.getAllClientes(pageable);
+        return ResponseEntity.ok(PageableMapper.toDto(clientes));
+    }
+
+    @GetMapping("/detalhes")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<ClienteResponseDto> getDetalhes(@AuthenticationPrincipal JwtUserDetails userDetails){
+        Cliente cliente = clienteService.buscarPorUsuarioId(userDetails.getId());
+        return ResponseEntity.ok(ClienteMapper.toDto(cliente));
     }
 
 }
