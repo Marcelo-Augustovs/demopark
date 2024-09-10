@@ -36,7 +36,7 @@ public class ApiExceptionHandler {
               .body(new ErroMessage(request ,HttpStatus.UNPROCESSABLE_ENTITY,"campo(s) invalido(s)",result ));
     }
 
-    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class, CodigoUniqueViolationException.class})
     public ResponseEntity<ErroMessage> uniqueViolationException(RuntimeException ex,HttpServletRequest request){
 
         log.error("Api Error - ",ex);
