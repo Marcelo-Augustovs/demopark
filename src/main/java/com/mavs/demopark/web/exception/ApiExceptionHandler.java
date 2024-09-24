@@ -72,4 +72,16 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErroMessage(request ,HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErroMessage> internalServerErrorException(Exception ex,HttpServletRequest request){
+        ErroMessage error = new ErroMessage(
+                request,HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()
+        );
+        log.error("Internal Server Error {} {}",error,ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(error);
+    }
 }
