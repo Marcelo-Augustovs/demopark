@@ -3,8 +3,10 @@ package com.mavs.demopark.web.controller;
 import com.mavs.demopark.entity.ClienteVaga;
 import com.mavs.demopark.jwt.JwtUserDetails;
 import com.mavs.demopark.repository.projection.ClienteVagaProjection;
+import com.mavs.demopark.service.ClienteService;
 import com.mavs.demopark.service.ClienteVagaService;
 import com.mavs.demopark.service.EstacionamentoService;
+import com.mavs.demopark.service.JasperService;
 import com.mavs.demopark.web.dto.EstacionamentoCreateDto;
 import com.mavs.demopark.web.dto.EstacionamentoResponseDto;
 import com.mavs.demopark.web.dto.PageableDto;
@@ -21,6 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,12 +31,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
@@ -46,6 +51,10 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 public class EstacionamentoController {
     private final EstacionamentoService estacionamentoService;
     private final ClienteVagaService clienteVagaService;
+
+    private final ClienteService clienteService;
+
+    private final JasperService jasperService;
 
     @Operation(summary = "operação de check-in", description = "Recurso para dar entrada de um veiculo no estacionamento " +
             "Requisição exige uso de bearen token. Acesso restrito a Role='ADMIN'",
@@ -142,6 +151,21 @@ public class EstacionamentoController {
         Page<ClienteVagaProjection> projection = clienteVagaService.buscarTodosPorUsuarioID(user.getId(), pageable);
         PageableDto dto = PageableMapper.toDto(projection);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/relatorio")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<Void> getRelatorio(HttpServletResponse response, @AuthenticationPrincipal JwtUserDetails user) throws IOException {
+        String cpf = clienteService.buscarPorUsuarioId(user.getId()).getCpf();
+        jasperService.addParams("CPF",cpf);
+
+        byte[] bytes = jasperService.gerarPdf();
+
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader("Content-disposition","inline; filename=" + System.currentTimeMillis()  + ".pdf");
+        response.getOutputStream().write(bytes);
+
+        return ResponseEntity.ok().build();
     }
 
 }
